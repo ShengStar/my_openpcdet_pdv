@@ -105,6 +105,7 @@ class VoxelBackBone8x(nn.Module):
             block(64, 64, 3, norm_fn=norm_fn, padding=1, indice_key='subm4'),
             block(64, 64, 3, norm_fn=norm_fn, padding=1, indice_key='subm4'),
         )
+        
 
         last_pad = 0
         last_pad = self.model_cfg.get('last_pad', last_pad)
@@ -122,6 +123,11 @@ class VoxelBackBone8x(nn.Module):
             'x_conv3': 64,
             'x_conv4': 64
         }
+
+        self.mhead_attention = nn.MultiheadAttention(
+            embed_dim= 8,
+            num_heads= 8,
+            dropout= 0.1,)
 
 
 
@@ -147,13 +153,18 @@ class VoxelBackBone8x(nn.Module):
             spatial_shape=self.sparse_shape, # [41, 1600, 1408]
             batch_size=batch_size # 2
         )
-
         x = self.conv_input(input_sp_tensor)
         # print(x.features.shape) # torch.Size([32000, 16]) 
         # print(x.features.device) # cuda:0
         # print(x.indices.shape) # torch.Size([32000, 4])
         # print(x.spatial_shape) # [41, 1600, 1408]
         # print(x.batch_size) # 2
+        # attend_features, attend_weights = self.mhead_attention( #官网实现标准注意力
+        #     query = query_features, # torch.Size([1, 23905, 16])     
+        #     key = key_features, # torch.Size([48, 23905, 16])
+        #     value = key_features, # torch.Size([48, 23905, 16])
+        #     key_padding_mask = key_mask, # torch.Size([23905, 48])
+        # )
         x_conv1 = self.conv1(x)# torch.Size([2, 16, 41, 1600, 1408])
         # print(x_conv1.features.shape) # torch.Size([32000, 16]) 
         # print(x_conv1.features.device) # cuda:0
