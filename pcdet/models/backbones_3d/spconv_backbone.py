@@ -125,7 +125,7 @@ class VoxelBackBone8x(nn.Module):
         }
 
         self.mhead_attention = nn.MultiheadAttention(
-            embed_dim= 8,
+            embed_dim= 16,
             num_heads= 8,
             dropout= 0.1,)
 
@@ -144,9 +144,12 @@ class VoxelBackBone8x(nn.Module):
         """
         voxel_features, voxel_coords = batch_dict['voxel_features'], batch_dict['voxel_coords']
         batch_size = batch_dict['batch_size']
-        # print(voxel_features.shape)
-        # print(voxel_coords.shape)
-        # print(batch_size)
+        # print("------------------")
+        # print(voxel_features)
+        # print(voxel_coords)
+        # # print(batch_size)
+        # print("------------------")
+
         input_sp_tensor = spconv.SparseConvTensor(
             features=voxel_features, # torch.Size([32000, 4]) 
             indices=voxel_coords.int(), # torch.Size([32000, 4]) 
@@ -154,18 +157,32 @@ class VoxelBackBone8x(nn.Module):
             batch_size=batch_size # 2
         )
         x = self.conv_input(input_sp_tensor)
+        print(x.features.shape)
+        x_input = x.features.unsqueeze(0)
+        # x_input = x_input.permute(0,2,1)
+        print(x_input.shape)
+
+
         # print(x.features.shape) # torch.Size([32000, 16]) 
         # print(x.features.device) # cuda:0
         # print(x.indices.shape) # torch.Size([32000, 4])
         # print(x.spatial_shape) # [41, 1600, 1408]
         # print(x.batch_size) # 2
-        # attend_features, attend_weights = self.mhead_attention( #官网实现标准注意力
-        #     query = query_features, # torch.Size([1, 23905, 16])     
-        #     key = key_features, # torch.Size([48, 23905, 16])
-        #     value = key_features, # torch.Size([48, 23905, 16])
-        #     key_padding_mask = key_mask, # torch.Size([23905, 48])
-        # )
+
+        attend_features, attend_weights = self.mhead_attention( #官网实现标准注意力
+            query = x_input, # torch.Size([1, 23905, 16])     
+            key = x_input, # torch.Size([48, 23905, 16])
+            value = x_input, # torch.Size([48, 23905, 16])
+            # key_padding_mask = x.features, # torch.Size([23905, 48])
+        )
+        attend_features = attend_features.squeeze(0) 
+        print(attend_features.shape)
+        x = x.replace_feature(attend_features)
         x_conv1 = self.conv1(x)# torch.Size([2, 16, 41, 1600, 1408])
+
+
+
+
         # print(x_conv1.features.shape) # torch.Size([32000, 16]) 
         # print(x_conv1.features.device) # cuda:0
         # print(x_conv1.indices.shape) # torch.Size([32000, 4])
