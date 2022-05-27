@@ -2,7 +2,6 @@
 **build**
 **egg-info**
 **dist**
-data/
 output/
 *.pyc
 venv/
