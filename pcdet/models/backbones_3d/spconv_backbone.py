@@ -179,21 +179,21 @@ class VoxelBackBone8x(nn.Module):
             batch_size=batch_size # 2
         )
         x = self.conv_input(input_sp_tensor)
-        x_input = x.features.unsqueeze(0)
-        # x_input = x_input.permute(0,2,1)
-        # print(x.features.shape) # torch.Size([32000, 16]) 
-        # print(x.features.device) # cuda:0
-        # print(x.indices.shape) # torch.Size([32000, 4])
-        # print(x.spatial_shape) # [41, 1600, 1408]
-        # print(x.batch_size) # 2
-        attend_features, attend_weights = self.mhead_attention( #官网实现标准注意力
-            query = x_input, # torch.Size([1, 23905, 16])     
-            key = x_input, # torch.Size([48, 23905, 16])
-            value = x_input, # torch.Size([48, 23905, 16])
-            # key_padding_mask = x.features, # torch.Size([23905, 48])
-        )
-        attend_features = attend_features.squeeze(0) 
-        x = x.replace_feature(attend_features)
+        # x_input = x.features.unsqueeze(0)
+        # # x_input = x_input.permute(0,2,1)
+        # # print(x.features.shape) # torch.Size([32000, 16]) 
+        # # print(x.features.device) # cuda:0
+        # # print(x.indices.shape) # torch.Size([32000, 4])
+        # # print(x.spatial_shape) # [41, 1600, 1408]
+        # # print(x.batch_size) # 2
+        # attend_features, attend_weights = self.mhead_attention( #官网实现标准注意力
+        #     query = x_input, # torch.Size([1, 23905, 16])     
+        #     key = x_input, # torch.Size([48, 23905, 16])
+        #     value = x_input, # torch.Size([48, 23905, 16])
+        #     # key_padding_mask = x.features, # torch.Size([23905, 48])
+        # )
+        # attend_features = attend_features.squeeze(0) 
+        # x = x.replace_feature(attend_features)
         x_conv1 = self.conv1(x)# torch.Size([2, 16, 41, 1600, 1408])
         x_input = x_conv1.features.unsqueeze(0)
         attend_features, attend_weights = self.mhead_attention_1( #官网实现标准注意力
