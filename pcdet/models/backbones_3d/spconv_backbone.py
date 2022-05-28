@@ -124,10 +124,10 @@ class VoxelBackBone8x(nn.Module):
             'x_conv4': 64
         }
 
-        self.mhead_attention = nn.MultiheadAttention(
-            embed_dim= 16,
-            num_heads= 8,
-            dropout= 0.1,)
+        # self.mhead_attention = nn.MultiheadAttention(
+        #     embed_dim= 16,
+        #     num_heads= 8,
+        #     dropout= 0.1,)
 
         self.mhead_attention_1 = nn.MultiheadAttention(
             embed_dim= 16,
@@ -149,6 +149,10 @@ class VoxelBackBone8x(nn.Module):
             num_heads= 8,
             dropout= 0.1,)
 
+        self.norm1 = nn.BatchNorm1d(16)
+        self.norm2 = nn.BatchNorm1d(32)
+        self.norm3 = nn.BatchNorm1d(64)
+        self.norm4 = nn.BatchNorm1d(64)
 
 
 
@@ -202,6 +206,7 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
+        attend_features = self.norm1(attend_features)
         attend_features = attend_features.squeeze(0)
         x_conv1 = x_conv1.replace_feature(attend_features)
         # print(x_conv1.features.shape) # torch.Size([32000, 16]) 
@@ -221,6 +226,7 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
+        attend_features = self.norm2(attend_features)
         attend_features = attend_features.squeeze(0)
         x_conv2 = x_conv2.replace_feature(attend_features)
 
@@ -240,6 +246,7 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
+        attend_features = self.norm3(attend_features)
         attend_features = attend_features.squeeze(0)
         x_conv3 = x_conv3.replace_feature(attend_features)
 
@@ -258,6 +265,7 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
+        attend_features = self.norm4(attend_features)
         attend_features = attend_features.squeeze(0)
         x_conv4 = x_conv4.replace_feature(attend_features)
 
