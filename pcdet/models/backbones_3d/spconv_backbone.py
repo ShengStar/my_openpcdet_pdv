@@ -206,8 +206,8 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
-        attend_features = self.norm1(attend_features)
         attend_features = attend_features.squeeze(0)
+        attend_features = self.norm1(attend_features)
         x_conv1 = x_conv1.replace_feature(attend_features)
         # print(x_conv1.features.shape) # torch.Size([32000, 16]) 
         # print(x_conv1.features.device) # cuda:0
@@ -226,8 +226,9 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
-        attend_features = self.norm2(attend_features)
+        
         attend_features = attend_features.squeeze(0)
+        attend_features = self.norm2(attend_features)
         x_conv2 = x_conv2.replace_feature(attend_features)
 
 
@@ -246,8 +247,9 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
-        attend_features = self.norm3(attend_features)
+        
         attend_features = attend_features.squeeze(0)
+        attend_features = self.norm3(attend_features)
         x_conv3 = x_conv3.replace_feature(attend_features)
 
         # print(x_conv3.features.shape) # torch.Size([32000, 64]) 
@@ -265,8 +267,9 @@ class VoxelBackBone8x(nn.Module):
             value = x_input, # torch.Size([48, 23905, 16])
             # key_padding_mask = x.features, # torch.Size([23905, 48])
         )
-        attend_features = self.norm4(attend_features)
+        
         attend_features = attend_features.squeeze(0)
+        attend_features = self.norm4(attend_features)
         x_conv4 = x_conv4.replace_feature(attend_features)
 
         # print(x_conv4.features.shape) # torch.Size([32000, 64]) 
